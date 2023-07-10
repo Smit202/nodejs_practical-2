@@ -45,30 +45,3 @@ body {
 .card_text {
     font-size: 16pt;
 }
-
-.countdown_section {
-    display: inline-block;
-    margin-left: 40px;
-}
-
-.countdown_section:first-child {
-    margin-left: 0px;
-}
-
-.countdown_section > .value {
-    background-color: #333;
-    border-radius: 10px;
-    font-size: 50px;
-    color: #ffc107;
-    line-height: 100px;
-    text-align: center;
-    height: 100px;
-    width: 100px;
-}
-
-.countdown_label {
-    font-size: 14pt;
-    padding-top: 4px;
-    text-align: center;
-}
-
