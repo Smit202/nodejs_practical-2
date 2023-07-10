@@ -21,22 +21,30 @@ app.get('/', (req, res, next) => {
 
 function checkStatus(schedule) {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    let date = new Date();
+    const date = new Date();
     console.log(date);
     // date.setHours(19);
     // date.setMinutes(0);
-    let currentTime = [date.getHours(), date.getMinutes(), date.getDay()];
-    const daySchedule = schedule.find(item => item.day === days[currentTime[2]]);
+    const currentTime = [date.getHours(), date.getMinutes(), date.getDay()];
+    let today = currentTime[2];
+    let offset = 0;
+    let daySchedule = schedule.find(item => item.day === days[today]);
+    while(!daySchedule) {
+        offset += 24;
+        if(today !== 6) today++;
+        else today = 0;
+        daySchedule = schedule.find(item => item.day === days[today]);
+    }
 
     console.log(currentTime);
 
     if(daySchedule) {
 
-        let openTime = daySchedule.open.split(' ');
+        const openTime = daySchedule.open.split(' ');
         openTime[0] = +openTime[0].slice(0, 2);
         openTime[1] = +openTime[1];
  
-        let closeTime = daySchedule.close.split(' ');
+        const closeTime = daySchedule.close.split(' ');
         closeTime[0] = +closeTime[0].slice(0, 2);
         closeTime[1] = +closeTime[1];
 
@@ -49,13 +57,17 @@ function checkStatus(schedule) {
         console.log(openTime);
         console.log(closeTime);
 
-        const openDate = new Date(date.getTime());
+        const openDate = new Date(date.getTime() + offset*60*60*1000);
         openDate.setHours(openTime[0]);
         openDate.setMinutes(openTime[1]);
+        openDate.setSeconds(0);
+        openDate.setMilliseconds(0);
 
-        const closeDate = new Date(date.getTime());
+        const closeDate = new Date(date.getTime() + offset*60*60*1000);
         closeDate.setHours(closeTime[0]);
         closeDate.setMinutes(closeTime[1]);
+        closeDate.setSeconds(0);
+        closeDate.setMilliseconds(0);
 
         const currentTimestamp = date.getTime();
         const openTimestamp = openDate.getTime();
@@ -63,7 +75,13 @@ function checkStatus(schedule) {
 
         console.log(currentTimestamp, openTimestamp, closeTimestamp);
 
-        if(currentTimestamp < openTimestamp || currentTimestamp > closeTimestamp) return 'Closed';
+        if(currentTimestamp < openTimestamp) {
+            return {
+                status: 'Closed',
+                openHours: (openTimestamp - currentTimestamp)*1000
+            }
+        } 
+        // || currentTimestamp > closeTimestamp) return 'Closed';
         return 'Open';
     }
     
