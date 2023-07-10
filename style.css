@@ -25,13 +25,25 @@ body {
 
 .card_body {
     font-size: 0;
-    padding: 1.5rem;
+    padding: 1.25rem;
 }
 
 .card_title {
-    font-size: 26pt;
+    font-size: 42pt;
     padding: 1.25rem;
-    margin: 40px 0px;
+    margin: 10px 0px;
+}
+
+.green {
+    color: green;
+}
+
+.red {
+    color: red;
+}
+
+.card_text {
+    font-size: 16pt;
 }
 
 .countdown_section {
@@ -59,3 +71,4 @@ body {
     padding-top: 4px;
     text-align: center;
 }
+

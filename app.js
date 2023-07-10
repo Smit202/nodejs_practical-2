@@ -12,9 +12,10 @@ app.get('/', (req, res, next) => {
     fs.readFile('schedule.json', (err, data) => {
         if(err) throw err;
         const schedule  = JSON.parse(data).shop_schedule;
-        console.log(checkStatus(schedule));
+        const status = checkStatus(schedule);
+        console.log(status);
         // res.send(checkStatus(schedule));
-        res.render('index');
+        res.render('index', {status,});
     });
 });
 
@@ -25,8 +26,8 @@ function checkStatus(schedule) {
     // console.log(date.getTimezoneOffset());
     // date = new Date(date.getTime() - date.getTimezoneOffset()*60*1000);
     console.log(date);
-    date.setHours(7);
-    date.setMinutes(30);
+    // date.setHours(19);
+    // date.setMinutes(49);
     // console.log(Intl.DateTimeFormat().resolvedOptions().timeZone); 
     currentDay = date.getDay();
     currentHours = date.getHours();
@@ -56,18 +57,18 @@ function checkStatus(schedule) {
         console.log(openHours, openMinutes, openMeridiem);
         console.log(closeHours, closeMinutes, closeMeridiem);
 
-        if (currentHours < openHours) return 'closed';
+        if (currentHours < openHours) return 'Closed';
         if (currentHours === openHours) {
-            return currentMinutes < openMinutes ? 'closed' : 'open';
+            return currentMinutes < openMinutes ? 'Closed' : 'Open';
         }
         if (currentHours === closeHours) {
-            return currentMinutes > closeMinutes ? 'closed' : 'open';
+            return currentMinutes > closeMinutes ? 'Closed' : 'Open';
         }
-        if(currentHours > openHours && currentHours < closeHours)   return 'open';
-        return 'closed';
+        if(currentHours > openHours && currentHours < closeHours)   return 'Open';
+        return 'Closed';
     }
     
-    return 'closed';
+    return 'Closed';
 }
 
 const PORT = 3000;
