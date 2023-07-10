@@ -21,22 +21,22 @@ app.get('/', (req, res, next) => {
 
 function checkStatus(schedule) {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-    let date = new Date();
+    const date = new Date();
     console.log(date);
     // date.setHours(19);
     // date.setMinutes(0);
-    let currentTime = [date.getHours(), date.getMinutes(), date.getDay()];
+    const currentTime = [date.getHours(), date.getMinutes(), date.getDay()];
     const daySchedule = schedule.find(item => item.day === days[currentTime[2]]);
 
     console.log(currentTime);
 
     if(daySchedule) {
 
-        let openTime = daySchedule.open.split(' ');
+        const openTime = daySchedule.open.split(' ');
         openTime[0] = +openTime[0].slice(0, 2);
         openTime[1] = +openTime[1];
  
-        let closeTime = daySchedule.close.split(' ');
+        const closeTime = daySchedule.close.split(' ');
         closeTime[0] = +closeTime[0].slice(0, 2);
         closeTime[1] = +closeTime[1];
 
