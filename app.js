@@ -88,10 +88,12 @@ function checkStatus(schedule) {
         let remainingMilliseconds = openTimestamp - currentTimestamp;
         let remainingSeconds = Math.floor((remainingMilliseconds / 1000) % 60);
         let remainingMinutes = Math.floor((remainingMilliseconds / (1000 * 60)) % 60);
-        let remainingHours = Math.floor(remainingMilliseconds / (1000 * 60 * 60));
+        let remainingHours = Math.floor((remainingMilliseconds / (1000 * 60 * 60)) % 24);
+        let remainingDays = Math.floor(remainingMilliseconds / (1000 * 60 * 60 * 24));
 
         return {
             status: 'Closed',
+            remainingDays,
             remainingHours,
             remainingMinutes,
             remainingSeconds,
@@ -101,10 +103,12 @@ function checkStatus(schedule) {
     let remainingMilliseconds = closeTimestamp - currentTimestamp;
     let remainingSeconds = Math.floor((remainingMilliseconds / 1000) % 60);
     let remainingMinutes = Math.floor((remainingMilliseconds / (1000 * 60)) % 60);
-    let remainingHours = Math.floor(remainingMilliseconds / (1000 * 60 * 60));
+    let remainingHours = Math.floor((remainingMilliseconds / (1000 * 60 * 60)) % 24);
+    let remainingDays = Math.floor(remainingMilliseconds / (1000 * 60 * 60 * 24));
 
     return {
         status: 'Open',
+        remainingDays,
         remainingHours,
         remainingMinutes,
         remainingSeconds,
