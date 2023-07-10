@@ -32,9 +32,10 @@ function checkStatus(schedule) {
     currentDay = date.getDay();
     currentHours = date.getHours();
     currentMinutes = date.getMinutes();
-    const daySchedule = schedule.find(item => item.day === days[currentDay]);
+    let currentTime = [date.getHours(), date.getMinutes(), date.getDay()];
+    const daySchedule = schedule.find(item => item.day === days[currentTime[2]]);
 
-    console.log(currentHours, currentMinutes, currentDay);
+    console.log(currentTime);
 
     if(daySchedule) {
 
@@ -42,29 +43,45 @@ function checkStatus(schedule) {
         let openHours = +openTime[0].slice(0, 2);
         let openMinutes = +openTime[1];
         let openMeridiem = openTime[2];
+
+        openTime[0] = +openTime[0].slice(0, 2);
+        openTime[1] = +openTime[1];
  
         let closeTime = daySchedule.close.split(' ');
         let closeHours = +closeTime[0].slice(0, 2);
         let closeMinutes = +closeTime[1];
         let closeMeridiem = closeTime[2];
 
-        if (openMeridiem === 'PM' && openHours !== 12) openHours += 12;
-        else if (openMeridiem === 'AM' && openHours === 12) openHours = 0;
+        closeTime[0] = +closeTime[0].slice(0, 2);
+        closeTime[1] = +closeTime[1];
 
-        if (closeMeridiem === 'PM' && closeHours !== 12) closeHours += 12;
-        else if (closeMeridiem === 'AM' && closeHours === 12) openHours = 0;
+        if (openTime[2] === 'PM' && openTime[0] !== 12) openTime[0] += 12;
+        else if (openTime[2] === 'AM' && openTime[0] === 12) openTime[0] = 0;
 
-        console.log(openHours, openMinutes, openMeridiem);
-        console.log(closeHours, closeMinutes, closeMeridiem);
+        if (closeTime[2] === 'PM' && closeTime[0] !== 12) closeTime[0] += 12;
+        else if (closeTime[2] === 'AM' && closeTime[0] === 12) openTime[0] = 0;
 
-        if (currentHours < openHours) return 'Closed';
-        if (currentHours === openHours) {
-            return currentMinutes < openMinutes ? 'Closed' : 'Open';
+        console.log(openTime);
+        console.log(closeTime);
+
+        // if (currentHours < openHours)   return 'Closed';
+        // if (currentHours === openHours) {
+        //     return currentMinutes < openMinutes ? 'Closed' : 'Open';
+        // }
+        // if (currentHours === closeHours) {
+        //     return currentMinutes > closeMinutes ? 'Closed' : 'Open';
+        // }
+        // if(currentHours > openHours && currentHours < closeHours)   return 'Open';
+        // return 'Closed';
+
+        if (currentTime[0] < openTime[0])   return 'Closed';
+        if (currentTime[0] === openTime[0]) {
+            return currentTime[1] < openTime[1] ? 'Closed' : 'Open';
         }
-        if (currentHours === closeHours) {
-            return currentMinutes > closeMinutes ? 'Closed' : 'Open';
+        if (currentTime[0] === closeTime[0]) {
+            return currentTime[1] > closeTime[1] ? 'Closed' : 'Open';
         }
-        if(currentHours > openHours && currentHours < closeHours)   return 'Open';
+        if(currentTime[0] > openTime[0] && currentTime[0] < closeTime[0])   return 'Open';
         return 'Closed';
     }
     
