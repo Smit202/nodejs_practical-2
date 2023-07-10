@@ -40,21 +40,14 @@ function checkStatus(schedule) {
     if(daySchedule) {
 
         let openTime = daySchedule.open.split(' ');
-        let openHours = +openTime[0].slice(0, 2);
-        let openMinutes = +openTime[1];
-        let openMeridiem = openTime[2];
-
         openTime[0] = +openTime[0].slice(0, 2);
         openTime[1] = +openTime[1];
  
         let closeTime = daySchedule.close.split(' ');
-        let closeHours = +closeTime[0].slice(0, 2);
-        let closeMinutes = +closeTime[1];
-        let closeMeridiem = closeTime[2];
-
         closeTime[0] = +closeTime[0].slice(0, 2);
         closeTime[1] = +closeTime[1];
 
+        // Converting 12 hour open and close time format to 24 hour format
         if (openTime[2] === 'PM' && openTime[0] !== 12) openTime[0] += 12;
         else if (openTime[2] === 'AM' && openTime[0] === 12) openTime[0] = 0;
 
@@ -64,17 +57,9 @@ function checkStatus(schedule) {
         console.log(openTime);
         console.log(closeTime);
 
-        // if (currentHours < openHours)   return 'Closed';
-        // if (currentHours === openHours) {
-        //     return currentMinutes < openMinutes ? 'Closed' : 'Open';
-        // }
-        // if (currentHours === closeHours) {
-        //     return currentMinutes > closeMinutes ? 'Closed' : 'Open';
-        // }
-        // if(currentHours > openHours && currentHours < closeHours)   return 'Open';
-        // return 'Closed';
-
-        if (currentTime[0] < openTime[0])   return 'Closed';
+        if (currentTime[0] < openTime[0])   {
+            
+        };
         if (currentTime[0] === openTime[0]) {
             return currentTime[1] < openTime[1] ? 'Closed' : 'Open';
         }
