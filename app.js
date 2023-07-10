@@ -52,10 +52,14 @@ function checkStatus(schedule) {
         const openDate = new Date(date.getTime());
         openDate.setHours(openTime[0]);
         openDate.setMinutes(openTime[1]);
+        openDate.setSeconds(0);
+        openDate.setMilliseconds(0);
 
         const closeDate = new Date(date.getTime());
         closeDate.setHours(closeTime[0]);
         closeDate.setMinutes(closeTime[1]);
+        closeDate.setSeconds(0);
+        closeDate.setMilliseconds(0);
 
         const currentTimestamp = date.getTime();
         const openTimestamp = openDate.getTime();
