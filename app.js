@@ -15,7 +15,7 @@ app.get('/', (req, res, next) => {
         const status = checkStatus(schedule);
         console.log(status);
         // res.send(checkStatus(schedule));
-        res.render('index', {status,});
+        res.render('index', status);
     });
 });
 
@@ -23,69 +23,92 @@ function checkStatus(schedule) {
     const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
     const date = new Date();
     console.log(date);
-    // date.setHours(19);
-    // date.setMinutes(0);
+    // date.setHours(13);
+    // date.setMinutes(20);
     const currentTime = [date.getHours(), date.getMinutes(), date.getDay()];
     let today = currentTime[2];
     let offset = 0;
     let daySchedule = schedule.find(item => item.day === days[today]);
-    while(!daySchedule) {
+    while (!daySchedule) {
         offset += 24;
-        if(today !== 6) today++;
-        else today = 0;
+        today !== 6 ? today++ : today = 0;
         daySchedule = schedule.find(item => item.day === days[today]);
     }
 
     console.log(currentTime);
 
-    if(daySchedule) {
+    const closeTime = daySchedule.close.split(' ');
+    closeTime[0] = +closeTime[0].slice(0, 2);
+    closeTime[1] = +closeTime[1];
 
-        const openTime = daySchedule.open.split(' ');
-        openTime[0] = +openTime[0].slice(0, 2);
-        openTime[1] = +openTime[1];
- 
-        const closeTime = daySchedule.close.split(' ');
-        closeTime[0] = +closeTime[0].slice(0, 2);
-        closeTime[1] = +closeTime[1];
+    // Converting 12 hour close time format to 24 hour format
+    if (closeTime[2] === 'PM' && closeTime[0] !== 12) closeTime[0] += 12;
+    if (closeTime[2] === 'AM' && closeTime[0] === 12) openTime[0] = 0;
 
-        // Converting 12 hour open and close time format to 24 hour format
-        if (openTime[2] === 'PM' && openTime[0] !== 12) openTime[0] += 12;
-        if (openTime[2] === 'AM' && openTime[0] === 12) openTime[0] = 0;
-        if (closeTime[2] === 'PM' && closeTime[0] !== 12) closeTime[0] += 12;
-        if (closeTime[2] === 'AM' && closeTime[0] === 12) openTime[0] = 0;
+    const closeDate = new Date(date.getTime() + offset * 60 * 60 * 1000);
+    closeDate.setHours(closeTime[0]);
+    closeDate.setMinutes(closeTime[1]);
+    closeDate.setSeconds(0);
+    closeDate.setMilliseconds(0);
 
-        console.log(openTime);
-        console.log(closeTime);
+    const currentTimestamp = date.getTime();
+    const closeTimestamp = closeDate.getTime();
 
-        const openDate = new Date(date.getTime() + offset*60*60*1000);
-        openDate.setHours(openTime[0]);
-        openDate.setMinutes(openTime[1]);
-        openDate.setSeconds(0);
-        openDate.setMilliseconds(0);
-
-        const closeDate = new Date(date.getTime() + offset*60*60*1000);
-        closeDate.setHours(closeTime[0]);
-        closeDate.setMinutes(closeTime[1]);
-        closeDate.setSeconds(0);
-        closeDate.setMilliseconds(0);
-
-        const currentTimestamp = date.getTime();
-        const openTimestamp = openDate.getTime();
-        const closeTimestamp = closeDate.getTime();
-
-        console.log(currentTimestamp, openTimestamp, closeTimestamp);
-
-        if(currentTimestamp < openTimestamp) {
-            return {
-                status: 'Closed',
-                openHours: (openTimestamp - currentTimestamp)*1000
-            }
-        } 
-        // || currentTimestamp > closeTimestamp) return 'Closed';
-        return 'Open';
+    if (currentTimestamp > closeTimestamp) {
+        today !== 6 ? today++ : today = 0;
+        offset = 24;
+        daySchedule = schedule.find(item => item.day === days[today]);
+        while (!daySchedule) {
+            offset += 24;
+            today !== 6 ? today++ : today = 0;
+            daySchedule = schedule.find(item => item.day === days[today]);
+        }
     }
-    
-    return 'Closed';
+
+    // Converting 12 hour open time format to 24 hour format
+    const openTime = daySchedule.open.split(' ');
+    openTime[0] = +openTime[0].slice(0, 2);
+    openTime[1] = +openTime[1];
+
+    if (openTime[2] === 'PM' && openTime[0] !== 12) openTime[0] += 12;
+    if (openTime[2] === 'AM' && openTime[0] === 12) openTime[0] = 0;
+
+    const openDate = new Date(date.getTime() + offset * 60 * 60 * 1000);
+    openDate.setHours(openTime[0]);
+    openDate.setMinutes(openTime[1]);
+    openDate.setSeconds(0);
+    openDate.setMilliseconds(0);
+
+    const openTimestamp = openDate.getTime();
+    console.log(openTime);
+    console.log(closeTime);
+    console.log(currentTimestamp, openTimestamp, closeTimestamp);
+
+    if (currentTimestamp < openTimestamp || currentTimestamp > closeTimestamp) {
+        let remainingMilliseconds = openTimestamp - currentTimestamp;
+        let remainingSeconds = Math.floor((remainingMilliseconds / 1000) % 60);
+        let remainingMinutes = Math.floor((remainingMilliseconds / (1000 * 60)) % 60);
+        let remainingHours = Math.floor(remainingMilliseconds / (1000 * 60 * 60));
+
+        return {
+            status: 'Closed',
+            remainingHours,
+            remainingMinutes,
+            remainingSeconds,
+        };
+    }
+
+    let remainingMilliseconds = closeTimestamp - currentTimestamp;
+    let remainingSeconds = Math.floor((remainingMilliseconds / 1000) % 60);
+    let remainingMinutes = Math.floor((remainingMilliseconds / (1000 * 60)) % 60);
+    let remainingHours = Math.floor(remainingMilliseconds / (1000 * 60 * 60));
+
+    return {
+        status: 'Open',
+        remainingHours,
+        remainingMinutes,
+        remainingSeconds,
+    };
 }
 
 const PORT = 3000;
